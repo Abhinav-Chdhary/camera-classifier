@@ -3,7 +3,8 @@ from tkinter import simpledialog
 import cv2 as cv
 import os
 import PIL.Image, PIL.ImageTk
-import Camera
+import camera
+import model
 
 
 class App:
@@ -12,7 +13,7 @@ class App:
         self.window_title = window_title
 
         self.counters = [1, 1]
-        # self.model = ...
+        self.model = model.Model()
 
         self.auto_predict = False
 
@@ -100,7 +101,7 @@ class App:
             cv.cvtColor(frame, cv.COLOR_RGB2GRAY),
         )
         img = PIL.Image.open(f"{class_num}/frame{self.counters[class_num-1]}.jpg")
-        img.thumbnail((150, 150), PIL.Image.ANTIALIAS)
+        img.thumbnail((150, 150), "ANTIALIAS")
         img.save(f"{class_num}/frame{self.counters[class_num-1]}.jpg")
 
         self.counters[class_num - 1] += 1
@@ -113,13 +114,12 @@ class App:
                     os.unlink(file_path)
 
         self.counters = [1, 1]
-        # self.model = model.Model()
+        self.model = model.Model()
         self.class_label.config(text="CLASS")
 
     def update(self):
         if self.auto_predict:
             self.predict()
-            pass
 
         ret, frame = self.camera.get_frame()
 
@@ -128,3 +128,14 @@ class App:
             self.canvas.create_image(0, 0, image=self.photo, anchor=tk.NW)
 
         self.window.after(self.delay, self.update)
+
+    def predict(self):
+        frame = self.camera
+        prediction = self.model.predict(frame)
+
+        if prediction == 1:
+            self.class_label.config(text=self.classname_one)
+            return self.classname_one
+        if prediction == 2:
+            self.class_label.config(text=self.classname_two)
+            return self.classname_two

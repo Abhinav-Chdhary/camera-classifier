@@ -32,7 +32,7 @@ class Model:
         frame = frame[1]
         cv.imwrite("frame.jpg", cv.cvtColor(cv.COLOR_RGB2GRAY))
         img = PIL.Image.open("frame.jpg")
-        img.thumbnail((150, 150), PIL.Image.ANTIALIAS)
+        img.thumbnail((150, 150), "ANTIALIAS")
         img.save("frame.jpg")
 
         img = cv.imread("frame.jpg")[:, :, 0]
